@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import ro.lavinia.dto.JobPositionDto;
+import ro.lavinia.entity.JobPosition;
 
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public interface JobPositionForSwagger {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
                             @ExampleObject(name = "Patch", value = EXAMPLE)}
-                    )) @RequestBody Map<String, Object> jobPositionDto, @PathVariable("id") Integer existingId) {
+                    )) @RequestBody Map<String, Object> updatedJobPosition, @PathVariable("id") Integer existingId) {
     }
 
     @ApiResponses(value = {@ApiResponse(responseCode = "200",
@@ -52,6 +53,6 @@ public interface JobPositionForSwagger {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
                             @ExampleObject(name = "Put", value = EXAMPLE)}
-                    )) @RequestBody JobPositionDto jobPositionDto, @PathVariable("id") Integer existingId) {
+                    )) @RequestBody JobPosition updatedJobPosition, @PathVariable("id") Integer existingId) {
     }
 }

@@ -12,6 +12,7 @@ public interface AttendanceMapper {
 
     Attendance AttendanceDtoToAttendanceEntity(AttendanceDto attendanceDto);
 
+
     AttendanceDto AttendanceEntityToAttendanceDto(Attendance attendance);
 
 }

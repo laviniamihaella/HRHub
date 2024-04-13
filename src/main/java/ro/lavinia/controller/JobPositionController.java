@@ -3,6 +3,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ro.lavinia.dto.JobPositionDto;
+import ro.lavinia.entity.JobPosition;
 import ro.lavinia.interfacesForSwagger.JobPositionForSwagger;
 import ro.lavinia.service.JobPositionServiceImpl;
 import java.util.List;
@@ -46,9 +47,9 @@ public class JobPositionController implements JobPositionForSwagger {
     @Operation(summary = "Update job position with put.")
     @PutMapping("/update-jobPosition-put/{id}")
     public void updateJobPositionWithPut(
-            @RequestBody JobPositionDto jobPositionDto ,
+            @RequestBody JobPosition updatedJobPosition ,
             @PathVariable("id") Integer existingId) {
-        jobPositionServiceImpl.updatePut(existingId, jobPositionDto);
+        jobPositionServiceImpl.updatePut(existingId, updatedJobPosition);
     }
 
     @Operation(summary = "Delete the job position by an id.")

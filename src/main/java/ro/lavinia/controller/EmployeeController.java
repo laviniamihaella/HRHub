@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ro.lavinia.dto.EmployeeDto;
+import ro.lavinia.entity.Employee;
 import ro.lavinia.interfacesForSwagger.EmployeeForSwagger;
 import ro.lavinia.service.EmployeeServiceImpl;
 
@@ -49,9 +50,9 @@ public class EmployeeController implements EmployeeForSwagger {
     @Operation(summary = "Update job position with put.")
     @PutMapping("/update-employee-put/{id}")
     public void updateEmployeeWithPut(
-            @RequestBody EmployeeDto employeeDto ,
+            @RequestBody Employee updatedEmployee ,
             @PathVariable("id") Integer existingId) {
-        employeeServiceImpl.updatePut(existingId, employeeDto);
+        employeeServiceImpl.updatePut(existingId, updatedEmployee);
     }
 
     @Operation(summary = "Delete the employee by an id.")

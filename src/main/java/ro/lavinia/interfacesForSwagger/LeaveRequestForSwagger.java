@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import ro.lavinia.dto.LeaveRequestDto;
+import ro.lavinia.entity.LeaveRequest;
 
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public interface LeaveRequestForSwagger {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
                             @ExampleObject(name = "Patch", value = EXAMPLE)}
-                    )) @RequestBody Map<String, Object> leaveRequestDto, @PathVariable("id") Integer existingId) {
+                    )) @RequestBody Map<String, Object> updatedLeaveRequest, @PathVariable("id") Integer existingId) {
     }
 
     @ApiResponses(value = {@ApiResponse(responseCode = "200",
@@ -51,7 +52,7 @@ public interface LeaveRequestForSwagger {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
                             @ExampleObject(name = "Put", value = EXAMPLE)}
-                    )) @RequestBody LeaveRequestDto leaveRequestDto, @PathVariable("id") Integer existingId) {
+                    )) @RequestBody LeaveRequest updatedLeaveRequest, @PathVariable("id") Integer existingId) {
     }
 
 }

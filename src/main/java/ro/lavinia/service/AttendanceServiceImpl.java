@@ -1,17 +1,13 @@
 package ro.lavinia.service;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ro.lavinia.dto.AttendanceDto;
-import ro.lavinia.dto.LeaveRequestDto;
 import ro.lavinia.entity.Attendance;
 import ro.lavinia.entity.Department;
 import ro.lavinia.entity.Employee;
-import ro.lavinia.entity.LeaveRequest;
 import ro.lavinia.exception.DepartmentNotFoundException;
-import ro.lavinia.exception.EmployeeNotFoundException;
+import ro.lavinia.exception.EntityNotFoundException;
 import ro.lavinia.mapper.AttendanceMapper;
-import ro.lavinia.mapper.LeaveRequestMapper;
 import ro.lavinia.repository.AttendanceRepository;
 import ro.lavinia.repository.EmployeeRepository;
 
@@ -30,17 +26,16 @@ public class AttendanceServiceImpl {
 
     public Attendance save(AttendanceDto attendanceDto, Integer employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + employeeId));
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + employeeId));
 
-        Department department = employee.getDepartment(); // Obținem departamentul asociat angajatului
-
+        Department department = employee.getDepartment();
         if (department == null) {
-            throw new DepartmentNotFoundException("Department not found for employee with id: " + employeeId);
+            throw new EntityNotFoundException("Department not found for employee with id: " + employeeId);
         }
 
         Attendance attendance = AttendanceMapper.INSTANCE.AttendanceDtoToAttendanceEntity(attendanceDto);
         attendance.setEmployee(employee);
-        attendance.setDepartment(department); // Setăm departamentul în cererea de concediu
+        attendance.setDepartment(department);
 
         return  attendanceRepository.save(attendance);
     }
@@ -76,7 +71,7 @@ public class AttendanceServiceImpl {
 
     public void updatePatch(Integer existingId, Map<String, Object> attendance) {
         Attendance existingAttendance = attendanceRepository.findById(existingId)
-                .orElseThrow(() -> new EntityNotFoundException("Attendance not found"));
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Attendance not found"));
 
         attendance.forEach((key, value) -> {
             switch (key) {

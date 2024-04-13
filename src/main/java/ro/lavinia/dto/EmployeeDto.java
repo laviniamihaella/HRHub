@@ -32,10 +32,11 @@ public class EmployeeDto {
     @JsonIgnore
     private JobPosition jobPosition;
 
+    @JsonManagedReference
     @JsonIgnore
-    private LeaveRequest leaveRequestList;
+    private List<LeaveRequest> leaveRequestList;
 
-    @JsonManagedReference // Marks this side of the relationship as the "forward" side
+    @JsonManagedReference
     @JsonIgnore
     private List<Attendance> attendanceList;
 

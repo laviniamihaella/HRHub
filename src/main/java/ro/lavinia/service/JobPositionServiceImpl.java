@@ -1,14 +1,18 @@
 package ro.lavinia.service;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ro.lavinia.dto.JobPositionDto;
+import ro.lavinia.entity.Department;
 import ro.lavinia.entity.JobPosition;
+import ro.lavinia.entity.LeaveRequest;
+import ro.lavinia.exception.EntityNotFoundException;
+import ro.lavinia.exception.FieldNotFoundException;
 import ro.lavinia.mapper.JobPositionMapper;
 import ro.lavinia.repository.DepartmentRepository;
 import ro.lavinia.repository.JobPositionRepository;
 
 import java.io.FileNotFoundException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +27,12 @@ public class JobPositionServiceImpl {
 
 
     public void save(JobPositionDto jobPositionDto,Integer departmentId) {
-        if (departmentRepository.findById(departmentId).isEmpty()){
-            throw  new RuntimeException("Department not found");
-        }
+        Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new EntityNotFoundException("The Department id is not valid."));
+
         JobPosition jobPosition = JobPositionMapper.INSTANCE.JobPositionDtoToJobPositionEntity(jobPositionDto);
+
+        jobPosition.setDepartment(department);
         jobPositionRepository.save(jobPosition);
     }
 
@@ -57,62 +63,47 @@ public class JobPositionServiceImpl {
     }
 
 
+    public void updatePatch(Integer existingId, Map<String, Object> updatedJobPosition) {
+        var jobPositionOptional = jobPositionRepository.findById(existingId);
+        if (jobPositionOptional.isEmpty()) {
+            throw new ro.lavinia.exception.EntityNotFoundException("JobPosition NOT Found");
+        }
+        JobPosition jobPosition = jobPositionOptional.get();
 
-
-
-
-    public void updatePatch(Integer existingId, Map<String, Object> JobPosition) {
-        JobPosition existingJobPosition = jobPositionRepository.findById(existingId)
-                .orElseThrow(() -> new EntityNotFoundException("JobPosition not found"));
-
-        JobPosition.forEach((key, value) -> {
-            switch (key) {
+        for (Map.Entry<String, Object> entry : updatedJobPosition.entrySet()) {
+            switch (entry.getKey()) {
                 case "Name":
-                    if (value instanceof Date) {
-                        existingJobPosition.setName(existingJobPosition.getName());
-                    } else {
-                        throw new IllegalArgumentException("Invalid value for 'Name'");
-                    }
+                    jobPosition.setName((String) entry.getValue());
                     break;
                 case "Description":
-                    if (value instanceof String) {
-                        existingJobPosition.setDescription(existingJobPosition.getDescription());
-                    } else {
-                        throw new IllegalArgumentException("Invalid value for 'ArrivalTime'");
-                    }
+                        jobPosition.setDescription((String) entry.getValue());
                     break;
                 case "Requests":
-                    if (value instanceof String) {
-                        existingJobPosition.setRequests(existingJobPosition.getRequests());
-                    } else {
-                        throw new IllegalArgumentException("Invalid value for 'ArrivalTime'");
-                    }
+                    jobPosition.setRequests((String) entry.getValue());
                     break;
                 case "Responsibilities":
-                    if (value instanceof String) {
-                        existingJobPosition.setResponsibilities(existingJobPosition.getResponsibilities());
-                    } else {
-                        throw new IllegalArgumentException("Invalid value for 'ArrivalTime'");
-                    }
+                    jobPosition.setResponsibilities((String) entry.getValue());
                     break;
                 default:
-                    throw new IllegalArgumentException("Unknown field: " + key);
+                    throw new FieldNotFoundException("Field " + entry.getKey() + " not recognized");
             }
-        });
+        }
 
-        jobPositionRepository.save(existingJobPosition);
+        jobPositionRepository.save(jobPosition);
     }
 
-    public void updatePut(Integer existingId, JobPositionDto jobPositionDto) {
+    public void updatePut(Integer existingId, JobPosition updatedJobPosition) {
         var JobPositionOptional = jobPositionRepository.findById(existingId);
         if (JobPositionOptional.isEmpty()) {
-            throw new RuntimeException("JobPosition NOT Found");
+            throw new EntityNotFoundException("Job Position with ID " + existingId + " NOT Found");
         }
         JobPosition existingJobPosition = JobPositionOptional.get();
-        existingJobPosition.setName(jobPositionDto.getName());
-        existingJobPosition.setDescription(jobPositionDto.getDescription());
-        existingJobPosition.setRequests(jobPositionDto.getRequests());
-        existingJobPosition.setResponsibilities(jobPositionDto.getResponsibilities());
+
+        existingJobPosition.setName(updatedJobPosition.getName());
+        existingJobPosition.setDescription(updatedJobPosition.getDescription());
+        existingJobPosition.setRequests(updatedJobPosition.getRequests());
+        existingJobPosition.setResponsibilities(updatedJobPosition.getResponsibilities());
+
         jobPositionRepository.save(existingJobPosition);
     }
 }

@@ -18,19 +18,19 @@ public class DepartmentDto {
 
     private String description;
 
-    @JsonManagedReference // Marks this side of the relationship as the "forward" side
+    @JsonManagedReference
     @JsonIgnore
     private List<Employee> employeeList;
 
-    @JsonManagedReference // Marks this side of the relationship as the "forward" side
+    @JsonManagedReference
     @JsonIgnore
     private List<JobPosition> jobPositionList;
 
-    @JsonManagedReference // Marks this side of the relationship as the "forward" side
+    @JsonManagedReference
     @JsonIgnore
     private List<LeaveRequest>leaveRequestList;
 
-    @JsonManagedReference // Marks this side of the relationship as the "forward" side
+    @JsonManagedReference
     @JsonIgnore
     private List<Attendance>attendanceList;
 

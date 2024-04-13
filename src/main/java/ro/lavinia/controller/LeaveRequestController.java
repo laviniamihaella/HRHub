@@ -41,17 +41,17 @@ public class LeaveRequestController implements LeaveRequestForSwagger {
     @Operation(summary = "Update leave request with patch.")
     @PatchMapping("/update-leaveRequest-patch/{id}")
     public void updateLeaveRequestWithPatch(
-            @RequestBody Map<String, Object> leaveRequest,
+            @RequestBody Map<String, Object> updatedLeaveRequest,
             @PathVariable("id") Integer existingId) {
-        leaveRequestServiceImpl.updatePatch(existingId, leaveRequest);
+        leaveRequestServiceImpl.updatePatch(existingId, updatedLeaveRequest);
     }
 
     @Operation(summary = "Update leave request with put.")
     @PutMapping("/update-leaveRequest-put/{id}")
     public void updateLeaveRequestWithPut(
-            @RequestBody LeaveRequestDto leaveRequestDto ,
+            @RequestBody LeaveRequest updatedLeaveRequest ,
             @PathVariable("id") Integer existingId) {
-        leaveRequestServiceImpl.updatePut(existingId, leaveRequestDto);
+        leaveRequestServiceImpl.updatePut(existingId, updatedLeaveRequest);
     }
 
     @Operation(summary = "Delete the leave request by an id.")
