@@ -1,64 +1,62 @@
 package ro.lavinia.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.lavinia.dto.AttendanceDto;
-import ro.lavinia.dto.LeaveRequestDto;
-import ro.lavinia.interfacesForSwagger.AttendanceForSwagger;
+import ro.lavinia.entity.Attendance;
+import ro.lavinia.swagger.AttendanceSwagger;
 import ro.lavinia.service.AttendanceServiceImpl;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/attendance")
-public class AttendanceController implements AttendanceForSwagger {
+public class AttendanceController implements AttendanceSwagger {
     private final AttendanceServiceImpl attendanceServiceImpl;
 
     @Operation(summary = "Save a new attendance")
-    @PostMapping("/create")
-    public void createAttendance(@RequestBody AttendanceDto attendanceDto,
-                                   @RequestParam("employeeId") Integer employeeId) {
-        attendanceServiceImpl.save(attendanceDto,employeeId);
+    @PostMapping("/{employeeId}")
+    public ResponseEntity<?> createAttendance(@RequestBody AttendanceDto attendanceDto,
+                                              @PathVariable Integer employeeId) {
+        return attendanceServiceImpl.save(attendanceDto,employeeId);
     }
 
     @Operation(summary = "Get a attendance by Id.")
-    @GetMapping("/get-by-id/{id}")
-    public Optional<AttendanceDto> getById(@PathVariable Integer id) {
-        return attendanceServiceImpl.getAnAttendanceById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAById(@PathVariable("id") Integer existingId) {
+        return attendanceServiceImpl.getAnAttendanceById(existingId);
     }
 
     @Operation(summary = "Get all attendance.")
-    @GetMapping("/all-attendance")
-    public List<AttendanceDto> getAllAttendance() {
+    @GetMapping
+    public ResponseEntity<?> getAllAttendance(){
         return attendanceServiceImpl.getAllAttendance();
     }
 
 
     @Operation(summary = "Update attendance with patch.")
-    @PatchMapping("/update-attendance-patch/{id}")
-    public void updateAttendanceWithPatch(
-            @RequestBody Map<String, Object> property,
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateAttendanceWithPatch(
+            @RequestBody Map<String, Object> updatedAttendance,
             @PathVariable("id") Integer existingId) {
-        attendanceServiceImpl.updatePatch(existingId, property);
+        return attendanceServiceImpl.updatePatch(existingId, updatedAttendance);
     }
 
     @Operation(summary = "Update attendance with put.")
-    @PutMapping("/update-attendance-put/{id}")
-    public void updateAttendanceWithPut(
-            @RequestBody AttendanceDto attendanceDto ,
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAttendanceWithPut(
+            @RequestBody Attendance updatedAttendance ,
             @PathVariable("id") Integer existingId) {
-        attendanceServiceImpl.updatePut(existingId, attendanceDto);
+       return attendanceServiceImpl.updatePut(existingId, updatedAttendance);
     }
 
     @Operation(summary = "Delete the attendance by an id.")
-    @DeleteMapping("/delete-by-id/{id}")
-    public void deleteById(@PathVariable Integer id) {
-        attendanceServiceImpl.deleteById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable("id")  Integer existingId) {
+        return attendanceServiceImpl.deleteById(existingId);
     }
-
 
 }

@@ -24,7 +24,7 @@ public class EmployeeDto {
 
     private String address;
 
-    private Float salary;
+    private Integer salary;
 
     @JsonIgnore
     private Department department;

@@ -1,62 +1,69 @@
 package ro.lavinia.controller;
+
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.lavinia.dto.JobPositionDto;
 import ro.lavinia.entity.JobPosition;
-import ro.lavinia.interfacesForSwagger.JobPositionForSwagger;
 import ro.lavinia.service.JobPositionServiceImpl;
-import java.util.List;
+import ro.lavinia.swagger.JobPositionSwagger;
+
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/jobPosition")
-public class JobPositionController implements JobPositionForSwagger {
-    
+@RequestMapping("/job-Position")
+public class JobPositionController implements JobPositionSwagger {
+
     private final JobPositionServiceImpl jobPositionServiceImpl;
 
     @Operation(summary = "Save a new job position")
-    @PostMapping("/create/{departmentId}")
-    public void createJobPosition(@RequestBody JobPositionDto jobPositionDto,@PathVariable Integer departmentId){
-        jobPositionServiceImpl.save(jobPositionDto,departmentId);
+    @PostMapping("/{departmentId}")
+    public ResponseEntity<?> createJobPosition(@RequestBody JobPositionDto jobPositionDto, @PathVariable Integer departmentId) {
+        return jobPositionServiceImpl.save(jobPositionDto, departmentId);
     }
 
     @Operation(summary = "Get a job position by Id.")
-    @GetMapping("/get-by-id/{id}")
-    public Optional<JobPositionDto> getById(@PathVariable Integer id) {
-        return jobPositionServiceImpl.getAJobPositionById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable("id") Integer existingId) {
+        return jobPositionServiceImpl.getAJobPositionById(existingId);
     }
 
-    @Operation(summary = "Get all job position.")
-    @GetMapping("/all-jobPosition")
-    public List<JobPositionDto> getAllJobPosition() {
-        return jobPositionServiceImpl.getAllJobPosition();
+    @Operation(summary = "Get a list of job position.")
+    @GetMapping
+    public ResponseEntity<?> getAllJobPositions() {
+        return jobPositionServiceImpl.getAllJobPositions();
     }
-
 
     @Operation(summary = "Update job position with patch.")
-    @PatchMapping("/update-jobPosition-patch/{id}")
-    public void updateJobPositionWithPatch(
-            @RequestBody Map<String, Object> jobPosition,
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateJobPositionWithPatch(
+            @RequestBody Map<String, Object> updatedJobPosition,
             @PathVariable("id") Integer existingId) {
-        jobPositionServiceImpl.updatePatch(existingId, jobPosition);
+        ResponseEntity<?> responseEntity = jobPositionServiceImpl.updatePatch(existingId, updatedJobPosition);
+        return ResponseEntity.status(responseEntity.getStatusCode())
+                .headers(responseEntity.getHeaders())
+                .body((String) responseEntity.getBody());
     }
 
     @Operation(summary = "Update job position with put.")
-    @PutMapping("/update-jobPosition-put/{id}")
-    public void updateJobPositionWithPut(
-            @RequestBody JobPosition updatedJobPosition ,
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateJobPositionWithPut(
+            @RequestBody JobPosition updatedJobPosition,
             @PathVariable("id") Integer existingId) {
-        jobPositionServiceImpl.updatePut(existingId, updatedJobPosition);
+
+        ResponseEntity<?> responseEntity = jobPositionServiceImpl.updatePut(existingId, updatedJobPosition);
+        return ResponseEntity.status(responseEntity.getStatusCode())
+                .headers(responseEntity.getHeaders())
+                .body((String) responseEntity.getBody());
     }
 
     @Operation(summary = "Delete the job position by an id.")
-    @DeleteMapping("/delete-by-id/{id}")
-    public void deleteById(@PathVariable Integer id) {
-        jobPositionServiceImpl.deleteById(id);
-    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable("id") Integer existingId) {
 
+        return jobPositionServiceImpl.deleteById(existingId);
+    }
 
 }

@@ -27,7 +27,7 @@ public class Employee {
     private String address;
 
     @Column(nullable = false)
-    private Float salary;
+    private Integer salary;
 
     @ManyToOne
     @JoinColumn(name = "department_id")

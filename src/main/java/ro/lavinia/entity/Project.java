@@ -26,7 +26,7 @@ public class Project {
     private String status;
 
     @Column(nullable = false)
-    private double budget;
+    private Integer budget;
 
     @Column(name = "start_date")
     private LocalDate startDate;

@@ -1,86 +1,137 @@
 package ro.lavinia.service;
-import jakarta.persistence.EntityNotFoundException;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ro.lavinia.dto.DepartmentDto;
 import ro.lavinia.entity.Department;
+import ro.lavinia.exception.EntityNotFoundException;
+import ro.lavinia.exception.FieldNotFoundException;
 import ro.lavinia.mapper.DepartmentMapper;
 import ro.lavinia.repository.DepartmentRepository;
-import java.util.Date;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class DepartmentServiceImpl {
     private final DepartmentRepository departmentRepository;
 
-    public void save(DepartmentDto departmentDto) {
-        Department department = DepartmentMapper.INSTANCE.DepartmentDtoToDepartmentEntity(departmentDto);
-        departmentRepository.save(department);
-    }
-
-    public Optional<DepartmentDto> getADepartmentById(Integer id) {
-        Optional<Department> departmentOptional = departmentRepository.findById(id);
-        return departmentOptional.map(DepartmentMapper.INSTANCE::DepartmentEntityToDepartmentDto);
-
-    }
-    public void deleteById(Integer id) {
-        Optional<Department> optionalProperty = departmentRepository.findById(id);
-        if (optionalProperty.isPresent()) {
-            departmentRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("The id for department is not valid");
-        }
-    }
-
-    public List<DepartmentDto> getAllDepartment() {
+    public ResponseEntity<?> save(DepartmentDto departmentDto) {
         try {
-            return departmentRepository.findAll().stream()
-                    .map(DepartmentMapper.INSTANCE::DepartmentEntityToDepartmentDto)
-                    .toList();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get list of departments: " + e.getMessage());
-        }
 
-    }
-
-    public void updatePatch(Integer existingId, Map<String, Object> attendance) {
-        Department existingDepartment = departmentRepository.findById(existingId)
-                .orElseThrow(() -> new EntityNotFoundException("Attendance not found"));
-                attendance.forEach((key, value) -> {
-            switch (key) {
-                case "Name":
-                    if (value instanceof Date) {
-                        existingDepartment.setName(existingDepartment.getName());
-                    } else {
-                        throw new IllegalArgumentException("Invalid value for 'Name'");
-                    }
-                    break;
-                case "Description":
-                    if (value instanceof String) {
-                        existingDepartment.setDescription(existingDepartment.getDescription());
-                    } else {
-                        throw new IllegalArgumentException("Invalid value for 'ArrivalTime'");
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown field: " + key);
+            if (departmentDto.getName() == null || departmentDto.getName().isEmpty() ||
+                    departmentDto.getDescription() == null || departmentDto.getDescription().isEmpty()) {
+                return new ResponseEntity<>("Department information is incomplete.", HttpStatus.BAD_REQUEST);
             }
-        });
 
-        departmentRepository.save(existingDepartment);
+            Department department = DepartmentMapper.INSTANCE.DepartmentDtoToDepartmentEntity(departmentDto);
+            departmentRepository.save(department);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while saving the attendance: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>("Department has been successfully saved.", HttpStatus.OK);
     }
 
-    public void updatePut(Integer existingId, DepartmentDto departmentDto) {
-        var attendanceOptional = departmentRepository.findById(existingId);
-        if (attendanceOptional.isEmpty()) {
-            throw new RuntimeException("Attendance NOT Found");
+    public ResponseEntity<?> getADepartmentById(Integer existingId) {
+        try {
+            Optional<Department> departmentOptional = departmentRepository.findById(existingId);
+            if (departmentOptional.isPresent()) {
+                Department department = departmentOptional.get();
+                DepartmentDto departmentDto = DepartmentMapper.INSTANCE.DepartmentEntityToDepartmentDto(department);
+                return new ResponseEntity<>(departmentDto, HttpStatus.OK);
+            } else {
+                throw new EntityNotFoundException("Department with ID " + existingId + " NOT Found.");
+            }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("Department with ID " + existingId + "  NOT Found.", HttpStatus.NOT_FOUND);
         }
-        Department existingDepartment = attendanceOptional.get();
+    }
 
-        existingDepartment.setName(departmentDto.getName());
-        existingDepartment.setDescription(departmentDto.getDescription());
-        departmentRepository.save(existingDepartment);
+    public ResponseEntity<?> getAllDepartment() {
+        try {
+            List<Department> departmentList = departmentRepository.findAll();
+            if (departmentList.isEmpty()) {
+                throw new EntityNotFoundException("Department list  NOT Found.");
+            } else {
+                List<DepartmentDto> departmentDtoList = departmentList.stream().toList()
+                        .stream().map(DepartmentMapper.INSTANCE::DepartmentEntityToDepartmentDto)
+                        .toList();
+                return new ResponseEntity<>(departmentDtoList, HttpStatus.OK);
+            }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("Department list  NOT Found.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<?> updatePatch(Integer existingId, Map<String, Object> updatedDepartment) {
+
+        try {
+
+            var departmentOptional = departmentRepository.findById(existingId);
+            if (departmentOptional.isEmpty()) {
+                throw new EntityNotFoundException("Department with ID " + existingId + " not found");
+            }
+            Department department = departmentOptional.get();
+            for (Map.Entry<String, Object> entry : updatedDepartment.entrySet()) {
+                String key = entry.getKey().toLowerCase();
+                switch (key) {
+                    case "name":
+                        department.setName((String) entry.getValue());
+                        break;
+                    case "description":
+                        department.setDescription((String) entry.getValue());
+                        break;
+                    default:
+                        throw new FieldNotFoundException("Unknown field: " + key);
+                }
+            }
+            departmentRepository.save(department);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("Department with ID " + existingId + " NOT Found.", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>("Department with ID " + existingId + " has been successfully updated with patched.", HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> updatePut(Integer existingId, Department updatedDepartment) {
+        try {
+
+            var departmentOptional = departmentRepository.findById(existingId);
+            if (departmentOptional.isEmpty()) {
+                throw new EntityNotFoundException("Department with ID " + existingId + " not found");
+            }
+            Department existingDepartment = departmentOptional.get();
+
+            existingDepartment.setName(updatedDepartment.getName());
+            existingDepartment.setDescription(updatedDepartment.getDescription());
+
+            if (existingDepartment.getName() == null || existingDepartment.getName().isEmpty() ||
+                    existingDepartment.getDescription() == null || existingDepartment.getDescription().isEmpty()) {
+                return new ResponseEntity<>("Department information is incomplete.", HttpStatus.BAD_REQUEST);
+            }
+
+            departmentRepository.save(existingDepartment);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("Department with ID " + existingId + " NOT Found.", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Department with ID " + existingId + " has been successfully updated with put.", HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> deleteById(Integer existingId) {
+        try {
+            Optional<Department> optionalProperty = departmentRepository.findById(existingId);
+            if (optionalProperty.isPresent()) {
+                departmentRepository.deleteById(existingId);
+                return new ResponseEntity<>("Department with ID " + existingId + " has been successfully deleted.", HttpStatus.OK);
+            } else {
+                throw new EntityNotFoundException("Department with ID " + existingId + " NOT Found.");
+            }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("Department with ID " + existingId + " NOT Found.", HttpStatus.NOT_FOUND);
+        }
     }
 }

@@ -19,7 +19,7 @@ public class ProjectDto {
 
     private String status;
 
-    private double budget;
+    private Integer budget;
 
     private LocalDate startDate;
 
