@@ -10,6 +10,7 @@ import ro.lavinia.entity.Employee;
 import ro.lavinia.entity.JobPosition;
 import ro.lavinia.exception.EntityNotFoundException;
 import ro.lavinia.exception.FieldNotFoundException;
+import ro.lavinia.exception.IncompleteFieldsException;
 import ro.lavinia.mapper.EmployeeMapper;
 import ro.lavinia.repository.DepartmentRepository;
 import ro.lavinia.repository.EmployeeRepository;
@@ -42,7 +43,7 @@ public class EmployeeServiceImpl {
                     employeeDto.getAddress() == null || employeeDto.getAddress().isEmpty() ||
                     employeeDto.getFirstName() == null || employeeDto.getFirstName().isEmpty() ||
                     employeeDto.getLastName() == null || employeeDto.getLastName().isEmpty()) {
-                return new ResponseEntity<>("Employee information is incomplete.", HttpStatus.BAD_REQUEST);
+               throw new IncompleteFieldsException("Employee information is incomplete.");
             }
 
             Employee employee = EmployeeMapper.INSTANCE.EmployeeDtoToEmployeeEntity(employeeDto);
@@ -53,6 +54,10 @@ public class EmployeeServiceImpl {
             employeeRepository.save(employee);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>("The ID for Department or Job Position NOT Found.", HttpStatus.NOT_FOUND);
+        }catch (IncompleteFieldsException e) {
+            return new ResponseEntity<>("Employee information is incomplete.", HttpStatus.BAD_REQUEST);
+        }catch (Exception e) {
+            return new ResponseEntity<>("An employee with this address already exist.", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Employee has been successfully saved.", HttpStatus.OK);
     }

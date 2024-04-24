@@ -5,15 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ro.lavinia.dto.AttendanceDto;
-import ro.lavinia.dto.LeaveRequestDto;
 import ro.lavinia.entity.Attendance;
 import ro.lavinia.entity.Employee;
-import ro.lavinia.entity.LeaveRequest;
 import ro.lavinia.exception.EntityNotFoundException;
 import ro.lavinia.exception.FieldNotFoundException;
+import ro.lavinia.exception.IncompleteFieldsException;
 import ro.lavinia.exception.InvalidPeriodException;
 import ro.lavinia.mapper.AttendanceMapper;
-import ro.lavinia.mapper.LeaveRequestMapper;
 import ro.lavinia.repository.AttendanceRepository;
 import ro.lavinia.repository.EmployeeRepository;
 
@@ -41,7 +39,7 @@ public class AttendanceServiceImpl {
             if (attendanceDto.getArrivalTime() == null ||
                     attendanceDto.getDepartureTime() == null ||
                     attendanceDto.getData() == null) {
-                return new ResponseEntity<>("Attendance information is incomplete.", HttpStatus.BAD_REQUEST);
+                throw new IncompleteFieldsException("Attendance information is incomplete.");
             }
 
             Attendance attendance = AttendanceMapper.INSTANCE.AttendanceDtoToAttendanceEntity(attendanceDto);
@@ -51,6 +49,8 @@ public class AttendanceServiceImpl {
             attendanceRepository.save(attendance);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>("Employee with ID " + employeeId + " not found.", HttpStatus.NOT_FOUND);
+        } catch (IncompleteFieldsException e) {
+            return new ResponseEntity<>("Attendance information is incomplete.", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Attendance has been successfully saved.", HttpStatus.OK);
     }
@@ -89,8 +89,6 @@ public class AttendanceServiceImpl {
     }
 
 
-
-
     public ResponseEntity<?> getAllAttendanceForAnEmployee(Integer employeeId) {
         Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
         if (employeeOptional.isEmpty()) {
@@ -109,9 +107,6 @@ public class AttendanceServiceImpl {
             return ResponseEntity.ok(attendanceDtoList);
         }
     }
-
-
-
 
 
     public ResponseEntity<?> updatePatch(Integer existingId, Map<String, Object> updatedAttendance) {

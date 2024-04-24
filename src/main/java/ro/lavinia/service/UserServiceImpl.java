@@ -13,6 +13,7 @@ import ro.lavinia.entity.Department;
 import ro.lavinia.entity.User;
 import ro.lavinia.exception.EntityNotFoundException;
 import ro.lavinia.exception.FieldNotFoundException;
+import ro.lavinia.exception.IncompleteFieldsException;
 import ro.lavinia.mapper.DepartmentMapper;
 import ro.lavinia.mapper.UserMapper;
 import ro.lavinia.repository.UserRepository;
@@ -31,11 +32,11 @@ private final UserRepository userRepository;
         try {
             if (userDto.getName() == null || userDto.getName().isEmpty() ||userDto.getEmail() == null|| userDto.getEmail().isEmpty()||
                     userDto.getPassword()== null || userDto.getPassword().isEmpty() ) {
-                return new ResponseEntity<>("User information is incomplete.", HttpStatus.BAD_REQUEST);
+               throw new IncompleteFieldsException("User information is incomplete.");
             }
             User user = UserMapper.INSTANCE.UserDtoDtoToUserEntity(userDto);
             userRepository.save(user);
-        } catch (Exception ex) {
+        } catch (IncompleteFieldsException e) {
             return new  ResponseEntity<>("User is not authorized to save an user", HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>("User has been successfully saved.", HttpStatus.OK);

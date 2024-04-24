@@ -11,6 +11,7 @@ import ro.lavinia.entity.Employee;
 import ro.lavinia.entity.Project;
 import ro.lavinia.exception.EntityNotFoundException;
 import ro.lavinia.exception.FieldNotFoundException;
+import ro.lavinia.exception.IncompleteFieldsException;
 import ro.lavinia.exception.InvalidPeriodException;
 import ro.lavinia.mapper.ProjectMapper;
 import ro.lavinia.repository.EmployeeRepository;
@@ -48,7 +49,7 @@ public class ProjectServiceImpl {
                     projectDto.getDescription().isEmpty() ||
                     projectDto.getStatus() == null ||
                     projectDto.getStatus().isEmpty()) {
-                return new ResponseEntity<>("Project information is incomplete.", HttpStatus.BAD_REQUEST);
+                throw new IncompleteFieldsException("Project information is incomplete.");
             }
 
 
@@ -60,8 +61,8 @@ public class ProjectServiceImpl {
             projectRepository.save(project);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>("Employee not found.", HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>("An error occurred while saving the project.", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IncompleteFieldsException e) {
+            return new ResponseEntity<>("Project information is incomplete.", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Project has been successfully saved.", HttpStatus.OK);
     }

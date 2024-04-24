@@ -8,6 +8,7 @@ import ro.lavinia.dto.DepartmentDto;
 import ro.lavinia.entity.Department;
 import ro.lavinia.exception.EntityNotFoundException;
 import ro.lavinia.exception.FieldNotFoundException;
+import ro.lavinia.exception.IncompleteFieldsException;
 import ro.lavinia.mapper.DepartmentMapper;
 import ro.lavinia.repository.DepartmentRepository;
 
@@ -25,12 +26,14 @@ public class DepartmentServiceImpl {
         try {
             if (departmentDto.getName() == null || departmentDto.getName().isEmpty() ||
                     departmentDto.getDescription() == null || departmentDto.getDescription().isEmpty()) {
-                return new ResponseEntity<>("Department information is incomplete.", HttpStatus.BAD_REQUEST);
+                throw new IncompleteFieldsException("Department information is incomplete.");
             }
             Department department = DepartmentMapper.INSTANCE.DepartmentDtoToDepartmentEntity(departmentDto);
             departmentRepository.save(department);
-        } catch (Exception ex) {
-            return new  ResponseEntity<>("User is not authorized to save a department", HttpStatus.FORBIDDEN);
+        } catch (IncompleteFieldsException e) {
+            return new ResponseEntity<>("Department information is incomplete.", HttpStatus.BAD_REQUEST);
+        }catch (Exception e) {
+            return new ResponseEntity<>("A department with this name already exist", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Department has been successfully saved.", HttpStatus.OK);
     }

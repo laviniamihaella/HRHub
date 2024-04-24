@@ -11,6 +11,7 @@ import ro.lavinia.entity.LeaveRequest;
 import ro.lavinia.entity.User;
 import ro.lavinia.exception.EntityNotFoundException;
 import ro.lavinia.exception.FieldNotFoundException;
+import ro.lavinia.exception.IncompleteFieldsException;
 import ro.lavinia.exception.InvalidPeriodException;
 import ro.lavinia.mapper.LeaveRequestMapper;
 import ro.lavinia.repository.DepartmentRepository;
@@ -42,7 +43,7 @@ public class LeaveRequestServiceImpl {
                 throw new EntityNotFoundException("Department for employee with id: " + employeeId + "  NOT Found.");
             }
             if (leaveRequestDto.getStartDate() == null || leaveRequestDto.getEndDate() == null) {
-                return new ResponseEntity<>("Leave Request information is incomplete.", HttpStatus.BAD_REQUEST);
+                throw new IncompleteFieldsException("Leave Request  information is incomplete.");
             }
 
             LeaveRequest leaveRequest = LeaveRequestMapper.INSTANCE.LeaveRequestDtoToLeaveRequestEntity(leaveRequestDto);
@@ -52,6 +53,8 @@ public class LeaveRequestServiceImpl {
             leaveRequestRepository.save(leaveRequest);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>("Employee with ID " + employeeId + " NOT Found.", HttpStatus.NOT_FOUND);
+        }catch (IncompleteFieldsException e) {
+            return new ResponseEntity<>("Leave Request information is incomplete.", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Leave Request has been successfully saved.", HttpStatus.OK);
     }

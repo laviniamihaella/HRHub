@@ -8,6 +8,7 @@ import ro.lavinia.dto.JobPositionDto;
 import ro.lavinia.entity.Department;
 import ro.lavinia.entity.JobPosition;
 import ro.lavinia.exception.EntityNotFoundException;
+import ro.lavinia.exception.IncompleteFieldsException;
 import ro.lavinia.mapper.JobPositionMapper;
 import ro.lavinia.repository.DepartmentRepository;
 import ro.lavinia.repository.JobPositionRepository;
@@ -32,7 +33,7 @@ public class JobPositionServiceImpl {
                     jobPositionDto.getDescription() == null || jobPositionDto.getDescription().isEmpty() ||
                     jobPositionDto.getRequests() == null || jobPositionDto.getRequests().isEmpty() ||
                     jobPositionDto.getResponsibilities() == null || jobPositionDto.getResponsibilities().isEmpty()) {
-                return new ResponseEntity<>("Job Position information is incomplete.", HttpStatus.BAD_REQUEST);
+                throw  new IncompleteFieldsException("Job Position information is incomplete.");
             }
 
             JobPosition jobPosition = JobPositionMapper.INSTANCE.JobPositionDtoToJobPositionEntity(jobPositionDto);
@@ -40,6 +41,8 @@ public class JobPositionServiceImpl {
             jobPositionRepository.save(jobPosition);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>("Department with ID " + departmentId + "  NOT Found.", HttpStatus.NOT_FOUND);
+        }catch (IncompleteFieldsException e) {
+            return new ResponseEntity<>("Job Position information is incomplete.", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Job Position has been successfully saved.", HttpStatus.OK);
     }
