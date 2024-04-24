@@ -1,6 +1,8 @@
 package ro.lavinia.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.EntityListeners;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +25,11 @@ public class UserDto {
     private String email;
     private String password;
 
+    @JsonBackReference
+    @JsonIgnore
     private Role role;
 
+    @JsonBackReference
+    @JsonIgnore
     private List<Token> tokens;
 }
