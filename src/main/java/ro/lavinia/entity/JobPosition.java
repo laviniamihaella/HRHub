@@ -1,14 +1,19 @@
 package ro.lavinia.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 
 @Data
 @Entity
+@EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "job_position")
 public class JobPosition {
 
     @Id

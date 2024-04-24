@@ -23,8 +23,9 @@ public interface JobPositionSwagger {
             "  \"responsibilities\": \"\"\n" +
             "}";
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> createJobPosition(
             @Parameter(description = "Job Position to be saved")
@@ -35,8 +36,9 @@ public interface JobPositionSwagger {
         return null;
     }
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<String> updateJobPositionWithPatch(
             @Parameter(description = "Job Position to be partially updated")
@@ -47,15 +49,16 @@ public interface JobPositionSwagger {
         return null;
     }
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<String> updateJobPositionWithPut(
             @Parameter(description = "Job Position to be updated ")
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
                             @ExampleObject(name = "Put", value = EXAMPLE)}
-                    )) @RequestBody JobPosition updatedJobPosition, @PathVariable("id") Integer existingId) {
+                    )) @RequestBody JobPositionDto updatedJobPosition, @PathVariable("id") Integer existingId) {
         return null;
     }
 

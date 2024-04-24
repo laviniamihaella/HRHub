@@ -1,7 +1,10 @@
 package ro.lavinia.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,6 +13,10 @@ import java.util.List;
 
 @Data
 @Entity
+@EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "project")
 public class Project {
 
     @Id
@@ -34,11 +41,6 @@ public class Project {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @ManyToMany
-    @JoinTable(
-            name = "project_employee",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "employee_id")
-    )
+    @ManyToMany(mappedBy = "projectList")
     private List<Employee> teamMembers = new ArrayList<>();
 }

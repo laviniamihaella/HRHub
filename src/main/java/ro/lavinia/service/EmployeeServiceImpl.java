@@ -138,7 +138,7 @@ public class EmployeeServiceImpl {
     }
 
 
-    public ResponseEntity<?> updatePut(Integer existingId, Employee updatedEmployee) {
+    public ResponseEntity<?> updatePut(Integer existingId, EmployeeDto updatedEmployee) {
         try {
             var employeeOptional = employeeRepository.findById(existingId);
             if (employeeOptional.isEmpty()) {

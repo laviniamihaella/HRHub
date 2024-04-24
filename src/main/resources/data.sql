@@ -1,5 +1,5 @@
 
-INSERT INTO department (name, description)VALUES
+INSERT INTO  department (name, description)VALUES
     ('HR', 'Human Resources department'),
     ('IT', 'Information Technology department'),
     ('Logistics', 'Logistics department');

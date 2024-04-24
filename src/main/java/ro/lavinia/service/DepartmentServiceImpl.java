@@ -21,17 +21,16 @@ public class DepartmentServiceImpl {
     private final DepartmentRepository departmentRepository;
 
     public ResponseEntity<?> save(DepartmentDto departmentDto) {
-        try {
 
+        try {
             if (departmentDto.getName() == null || departmentDto.getName().isEmpty() ||
                     departmentDto.getDescription() == null || departmentDto.getDescription().isEmpty()) {
                 return new ResponseEntity<>("Department information is incomplete.", HttpStatus.BAD_REQUEST);
             }
-
             Department department = DepartmentMapper.INSTANCE.DepartmentDtoToDepartmentEntity(departmentDto);
             departmentRepository.save(department);
-        } catch (Exception e) {
-            return new ResponseEntity<>("An error occurred while saving the attendance: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception ex) {
+            return new  ResponseEntity<>("User is not authorized to save a department", HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>("Department has been successfully saved.", HttpStatus.OK);
     }
@@ -97,7 +96,7 @@ public class DepartmentServiceImpl {
         return new ResponseEntity<>("Department with ID " + existingId + " has been successfully updated with patched.", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updatePut(Integer existingId, Department updatedDepartment) {
+    public ResponseEntity<?> updatePut(Integer existingId, DepartmentDto updatedDepartment) {
         try {
 
             var departmentOptional = departmentRepository.findById(existingId);
@@ -123,8 +122,8 @@ public class DepartmentServiceImpl {
 
     public ResponseEntity<?> deleteById(Integer existingId) {
         try {
-            Optional<Department> optionalProperty = departmentRepository.findById(existingId);
-            if (optionalProperty.isPresent()) {
+            Optional<Department> optionalDepartment = departmentRepository.findById(existingId);
+            if (optionalDepartment.isPresent()) {
                 departmentRepository.deleteById(existingId);
                 return new ResponseEntity<>("Department with ID " + existingId + " has been successfully deleted.", HttpStatus.OK);
             } else {

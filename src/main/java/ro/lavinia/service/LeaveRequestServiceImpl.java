@@ -8,6 +8,7 @@ import ro.lavinia.dto.LeaveRequestDto;
 import ro.lavinia.entity.Department;
 import ro.lavinia.entity.Employee;
 import ro.lavinia.entity.LeaveRequest;
+import ro.lavinia.entity.User;
 import ro.lavinia.exception.EntityNotFoundException;
 import ro.lavinia.exception.FieldNotFoundException;
 import ro.lavinia.exception.InvalidPeriodException;
@@ -15,6 +16,7 @@ import ro.lavinia.mapper.LeaveRequestMapper;
 import ro.lavinia.repository.DepartmentRepository;
 import ro.lavinia.repository.EmployeeRepository;
 import ro.lavinia.repository.LeaveRequestRepository;
+import ro.lavinia.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,6 +29,7 @@ public class LeaveRequestServiceImpl {
     private final LeaveRequestRepository leaveRequestRepository;
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
+    private final UserRepository userRepository;
 
     public ResponseEntity<?> save(LeaveRequestDto leaveRequestDto, Integer employeeId) {
         try {
@@ -68,6 +71,26 @@ public class LeaveRequestServiceImpl {
             return new ResponseEntity<>("Leave Request with ID " + existingId + "  NOT Found.", HttpStatus.NOT_FOUND);
         }
     }
+
+    public ResponseEntity<?> getAllLeaveRequestForAnEmployee(Integer employeeId) {
+        Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
+        if (employeeOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new EntityNotFoundException("Employee with ID " + employeeId + " not found."));
+        }
+
+        List<LeaveRequest> leaveRequestList = leaveRequestRepository.findByEmployee(employeeOptional.get());
+        if (leaveRequestList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new EntityNotFoundException("Leave request list not found for employee with ID " + employeeId));
+        } else {
+            List<LeaveRequestDto> leaveRequestDtoList = leaveRequestList.stream()
+                    .map(LeaveRequestMapper.INSTANCE::LeaveRequestEntityToLeaveRequestDto)
+                    .toList();
+            return ResponseEntity.ok(leaveRequestDtoList);
+        }
+    }
+
 
     public ResponseEntity<?> getAllLeaveRequest() {
         try {
@@ -136,7 +159,7 @@ public class LeaveRequestServiceImpl {
         return new ResponseEntity<>("Leave Request with ID " + existingId + " has been successfully updated with patched.", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updatePut(Integer existingId, LeaveRequest updatedLeaveRequest) {
+    public ResponseEntity<?> updatePut(Integer existingId, LeaveRequestDto updatedLeaveRequest) {
         try {
 
 
@@ -183,8 +206,8 @@ public class LeaveRequestServiceImpl {
 
     public ResponseEntity<?> deleteById(Integer existingId) {
         try {
-            Optional<LeaveRequest> optionalProperty = leaveRequestRepository.findById(existingId);
-            if (optionalProperty.isPresent()) {
+            Optional<LeaveRequest> optionalLeaveRequest = leaveRequestRepository.findById(existingId);
+            if (optionalLeaveRequest.isPresent()) {
                 leaveRequestRepository.deleteById(existingId);
                 return new ResponseEntity<>("Leave Request with ID " + existingId + " has been successfully deleted.", HttpStatus.OK);
             } else {

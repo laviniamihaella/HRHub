@@ -22,8 +22,9 @@ public interface EmployeeSwagger {
             "  \"salary\":  0 \n" +
             "}";
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully saved"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> createEmployee(
             @Parameter(description = "Employee to be saved")
@@ -35,8 +36,9 @@ public interface EmployeeSwagger {
     }
 
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully saved"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> updateEmployeeWithPatch(
             @Parameter(description = "Employee to be partially updated")
@@ -47,15 +49,16 @@ public interface EmployeeSwagger {
                 return null;
     }
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully saved"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> updateEmployeeWithPut(
             @Parameter(description = "Employee to be updated ")
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
                             @ExampleObject(name = "Put", value = EXAMPLE)}
-                    )) @RequestBody ro.lavinia.entity.Employee updatedEmployee, @PathVariable("id") Integer existingId) {
+                    )) @RequestBody EmployeeDto updatedEmployee, @PathVariable("id") Integer existingId) {
                 return null;
 
     }

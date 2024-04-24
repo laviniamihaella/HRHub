@@ -1,12 +1,22 @@
 package ro.lavinia.entity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ManyToAny;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.util.List;
 
 @Data
 @Entity
+@Builder
+@EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "department")
+
 public class Department {
 
     @Id

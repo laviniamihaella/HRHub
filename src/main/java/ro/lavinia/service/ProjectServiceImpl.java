@@ -156,7 +156,7 @@ public class ProjectServiceImpl {
 
     }
 
-    public ResponseEntity<?> updatePut(Integer existingId, Project updatedProject) {
+    public ResponseEntity<?> updatePut(Integer existingId, ProjectDto updatedProject) {
         try {
 
             var projectOptional = projectRepository.findById(existingId);

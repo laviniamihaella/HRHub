@@ -24,6 +24,7 @@ public interface LeaveRequestSwagger {
 
             @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> createLeaveRequest(
             @Parameter(description = "Leave Request to be saved")
@@ -37,8 +38,9 @@ public interface LeaveRequestSwagger {
 
             @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
-    default ResponseEntity<?> updateLeaveRequestPatch(
+    default ResponseEntity<?> updateLeaveRequestWithPatch(
             @Parameter(description = "Leave Request to be partially updated")
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
@@ -49,13 +51,14 @@ public interface LeaveRequestSwagger {
 
             @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> updateLeaveRequestWithPut(
                     @Parameter(description = "Leave Request to be updated ")
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
                             @ExampleObject(name = "Put", value = EXAMPLE)}
-                    )) @RequestBody LeaveRequest updatedLeaveRequest, @PathVariable("id") Integer existingId) {
+                    )) @RequestBody LeaveRequestDto updatedLeaveRequest, @PathVariable("id") Integer existingId) {
                 return null;
     }
 

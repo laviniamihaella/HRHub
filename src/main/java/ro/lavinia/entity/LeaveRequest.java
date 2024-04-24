@@ -1,15 +1,20 @@
 package ro.lavinia.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
 
 @Data
 @Entity
+@EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "leave_request")
 public class LeaveRequest {
 
     @Id

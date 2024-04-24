@@ -24,8 +24,9 @@ public interface ProjectSwagger {
             "  \"budget\":  0 \n" +
             "}";
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> createProject(
             @Parameter(description = "Project to be saved")
@@ -37,8 +38,9 @@ public interface ProjectSwagger {
     }
 
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> updateProjectWithPatch(
             @Parameter(description = "Project to be partially updated")
@@ -49,15 +51,16 @@ public interface ProjectSwagger {
                 return null;
     }
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> updateProjectWithPut(
             @Parameter(description = "Project to be updated ")
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
                             @ExampleObject(name = "Put", value = EXAMPLE)}
-                    )) @RequestBody ro.lavinia.entity.Project updatedProject, @PathVariable("id") Integer existingId) {
+                    )) @RequestBody ProjectDto updatedProject, @PathVariable("id") Integer existingId) {
                 return null;
     }
 

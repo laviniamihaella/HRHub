@@ -21,8 +21,9 @@ public interface AttendanceSwagger {
             "  \"departureTime\": \"00:00\"\n" +
             "}";
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully saved"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> createAttendance(
             @Parameter(description = "Attendance to be saved")
@@ -34,8 +35,9 @@ public interface AttendanceSwagger {
     }
 
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully saved"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> updateAttendanceWithPatch(
             @Parameter(description = "Attendance to be partially updated")
@@ -46,15 +48,16 @@ public interface AttendanceSwagger {
                 return null;
     }
 
-            @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully saved"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> updateAttendanceWithPut(
                     @Parameter(description = "Attendance to be updated ")
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(examples = {
                             @ExampleObject(name = "Put", value = EXAMPLE)}
-                    )) @RequestBody Attendance updatedAttendance, @PathVariable("id") Integer existingId) {
+                    )) @RequestBody AttendanceDto updatedAttendance, @PathVariable("id") Integer existingId) {
                 return null;
     }
 

@@ -112,7 +112,7 @@ public class JobPositionServiceImpl {
         return new ResponseEntity<>("Job Position with ID " + existingId + " has been successfully updated with patched.", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updatePut(Integer existingId, JobPosition updatedJobPosition) {
+    public ResponseEntity<?> updatePut(Integer existingId, JobPositionDto updatedJobPosition) {
         try {
 
             var JobPositionOptional = jobPositionRepository.findById(existingId);

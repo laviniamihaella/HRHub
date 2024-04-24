@@ -20,8 +20,9 @@ public interface DepartmentSwagger {
             "  \"description\": \"\"\n" +
             "}";
 
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully saved"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> createDepartment(
             @Parameter(description = "Department to be saved")
@@ -33,8 +34,9 @@ public interface DepartmentSwagger {
     }
 
 
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully saved"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> updateDepartmentWithPatch(
             @Parameter(description = "Department to be partially updated")
@@ -45,8 +47,9 @@ public interface DepartmentSwagger {
         return null;
     }
 
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully saved"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully updated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Not Found - Resource not found")})
     default ResponseEntity<?> updateDepartmentWithPut(
             @Parameter(description = "Department to be updated ")

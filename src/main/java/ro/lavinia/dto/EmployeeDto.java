@@ -2,7 +2,11 @@ package ro.lavinia.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.EntityListeners;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ro.lavinia.entity.Attendance;
 import ro.lavinia.entity.Department;
 import ro.lavinia.entity.JobPosition;
@@ -12,6 +16,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor
+@NoArgsConstructor
 public class EmployeeDto {
 
     private Integer id;

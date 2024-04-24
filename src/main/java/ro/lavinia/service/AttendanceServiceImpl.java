@@ -5,12 +5,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ro.lavinia.dto.AttendanceDto;
+import ro.lavinia.dto.LeaveRequestDto;
 import ro.lavinia.entity.Attendance;
 import ro.lavinia.entity.Employee;
+import ro.lavinia.entity.LeaveRequest;
 import ro.lavinia.exception.EntityNotFoundException;
 import ro.lavinia.exception.FieldNotFoundException;
 import ro.lavinia.exception.InvalidPeriodException;
 import ro.lavinia.mapper.AttendanceMapper;
+import ro.lavinia.mapper.LeaveRequestMapper;
 import ro.lavinia.repository.AttendanceRepository;
 import ro.lavinia.repository.EmployeeRepository;
 
@@ -85,6 +88,32 @@ public class AttendanceServiceImpl {
         }
     }
 
+
+
+
+    public ResponseEntity<?> getAllAttendanceForAnEmployee(Integer employeeId) {
+        Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
+        if (employeeOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new EntityNotFoundException("Employee with ID " + employeeId + " not found."));
+        }
+
+        List<Attendance> attendanceList = attendanceRepository.findByEmployee(employeeOptional.get());
+        if (attendanceList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new EntityNotFoundException("Leave request list not found for employee with ID " + employeeId));
+        } else {
+            List<AttendanceDto> attendanceDtoList = attendanceList.stream()
+                    .map(AttendanceMapper.INSTANCE::AttendanceEntityToAttendanceDto)
+                    .toList();
+            return ResponseEntity.ok(attendanceDtoList);
+        }
+    }
+
+
+
+
+
     public ResponseEntity<?> updatePatch(Integer existingId, Map<String, Object> updatedAttendance) {
         try {
 
@@ -138,7 +167,7 @@ public class AttendanceServiceImpl {
         return new ResponseEntity<>("Attendance with ID " + existingId + " has been successfully updated with patched.", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updatePut(Integer existingId, Attendance updatedAttendance) {
+    public ResponseEntity<?> updatePut(Integer existingId, AttendanceDto updatedAttendance) {
         try {
             if (updatedAttendance.getArrivalTime() != null && updatedAttendance.getDepartureTime() != null &&
                     updatedAttendance.getArrivalTime().isAfter(updatedAttendance.getDepartureTime())) {
@@ -180,5 +209,6 @@ public class AttendanceServiceImpl {
             return new ResponseEntity<>("Attendance with ID " + existingId + " NOT Found.", HttpStatus.NOT_FOUND);
         }
     }
+
 
 }
