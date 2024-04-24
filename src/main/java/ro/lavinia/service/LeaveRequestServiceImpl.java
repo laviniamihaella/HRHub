@@ -8,11 +8,7 @@ import ro.lavinia.dto.LeaveRequestDto;
 import ro.lavinia.entity.Department;
 import ro.lavinia.entity.Employee;
 import ro.lavinia.entity.LeaveRequest;
-import ro.lavinia.entity.User;
-import ro.lavinia.exception.EntityNotFoundException;
-import ro.lavinia.exception.FieldNotFoundException;
-import ro.lavinia.exception.IncompleteFieldsException;
-import ro.lavinia.exception.InvalidPeriodException;
+import ro.lavinia.exception.*;
 import ro.lavinia.mapper.LeaveRequestMapper;
 import ro.lavinia.repository.DepartmentRepository;
 import ro.lavinia.repository.EmployeeRepository;
@@ -53,7 +49,7 @@ public class LeaveRequestServiceImpl {
             leaveRequestRepository.save(leaveRequest);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>("Employee with ID " + employeeId + " NOT Found.", HttpStatus.NOT_FOUND);
-        }catch (IncompleteFieldsException e) {
+        } catch (IncompleteFieldsException e) {
             return new ResponseEntity<>("Leave Request information is incomplete.", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Leave Request has been successfully saved.", HttpStatus.OK);
@@ -76,22 +72,26 @@ public class LeaveRequestServiceImpl {
     }
 
     public ResponseEntity<?> getAllLeaveRequestForAnEmployee(Integer employeeId) {
-        Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
-        if (employeeOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new EntityNotFoundException("Employee with ID " + employeeId + " not found."));
+        try {
+            Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
+            if (employeeOptional.isEmpty()) {
+                throw new EntityNotFoundException("Employee with ID " + employeeId + " not found.");
+            }
+            List<LeaveRequest> leaveRequestList = leaveRequestRepository.findByEmployee(employeeOptional.get());
+            if (leaveRequestList.isEmpty()) {
+                throw new GetListException("Leave request list not found for employee with ID " + employeeId);
+            } else {
+                List<LeaveRequestDto> leaveRequestDtoList = leaveRequestList.stream()
+                        .map(LeaveRequestMapper.INSTANCE::LeaveRequestEntityToLeaveRequestDto)
+                        .toList();
+                return new ResponseEntity<>(leaveRequestDtoList, HttpStatus.OK);
+            }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("Employee with ID " + employeeId + "  NOT Found.", HttpStatus.NOT_FOUND);
+        } catch (GetListException e) {
+            return new ResponseEntity<>("Leave request list not found for employee with ID " + employeeId, HttpStatus.NOT_FOUND);
         }
 
-        List<LeaveRequest> leaveRequestList = leaveRequestRepository.findByEmployee(employeeOptional.get());
-        if (leaveRequestList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new EntityNotFoundException("Leave request list not found for employee with ID " + employeeId));
-        } else {
-            List<LeaveRequestDto> leaveRequestDtoList = leaveRequestList.stream()
-                    .map(LeaveRequestMapper.INSTANCE::LeaveRequestEntityToLeaveRequestDto)
-                    .toList();
-            return ResponseEntity.ok(leaveRequestDtoList);
-        }
     }
 
 

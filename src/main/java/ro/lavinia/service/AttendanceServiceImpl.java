@@ -5,13 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ro.lavinia.dto.AttendanceDto;
+import ro.lavinia.dto.LeaveRequestDto;
 import ro.lavinia.entity.Attendance;
 import ro.lavinia.entity.Employee;
-import ro.lavinia.exception.EntityNotFoundException;
-import ro.lavinia.exception.FieldNotFoundException;
-import ro.lavinia.exception.IncompleteFieldsException;
-import ro.lavinia.exception.InvalidPeriodException;
+import ro.lavinia.entity.LeaveRequest;
+import ro.lavinia.exception.*;
 import ro.lavinia.mapper.AttendanceMapper;
+import ro.lavinia.mapper.LeaveRequestMapper;
 import ro.lavinia.repository.AttendanceRepository;
 import ro.lavinia.repository.EmployeeRepository;
 
@@ -90,21 +90,26 @@ public class AttendanceServiceImpl {
 
 
     public ResponseEntity<?> getAllAttendanceForAnEmployee(Integer employeeId) {
-        Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
-        if (employeeOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new EntityNotFoundException("Employee with ID " + employeeId + " not found."));
-        }
+        try {
 
-        List<Attendance> attendanceList = attendanceRepository.findByEmployee(employeeOptional.get());
-        if (attendanceList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new EntityNotFoundException("Leave request list not found for employee with ID " + employeeId));
-        } else {
-            List<AttendanceDto> attendanceDtoList = attendanceList.stream()
-                    .map(AttendanceMapper.INSTANCE::AttendanceEntityToAttendanceDto)
-                    .toList();
-            return ResponseEntity.ok(attendanceDtoList);
+            Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
+            if (employeeOptional.isEmpty()) {
+                throw new EntityNotFoundException("Employee with ID " + employeeId + " not found.");
+            }
+
+            List<Attendance> attendanceList = attendanceRepository.findByEmployee(employeeOptional.get());
+            if (attendanceList.isEmpty()) {
+                throw new GetListException("Attendance list not found for employee with ID " + employeeId);
+            } else {
+                List<AttendanceDto> attendanceDtoList = attendanceList.stream()
+                        .map(AttendanceMapper.INSTANCE::AttendanceEntityToAttendanceDto)
+                        .toList();
+                return new ResponseEntity<>(attendanceDtoList, HttpStatus.OK);
+            }
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>("Employee with ID " + employeeId + "  NOT Found.", HttpStatus.NOT_FOUND);
+        } catch (GetListException e) {
+            return new ResponseEntity<>("Attendance list not found for employee with ID " + employeeId, HttpStatus.NOT_FOUND);
         }
     }
 
